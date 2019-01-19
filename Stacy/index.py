@@ -1,4 +1,5 @@
 import discord
+import os
 import asyncio
 from dateutil.parser import parse
 from googlecalendar import get_upcoming
@@ -54,4 +55,4 @@ async def on_message(message):
         else:
             await client.send_message(message.channel, content="Hey {}, I'm Stacy, Assistant here at Bots Unlimited. I'm only available to executive".format(name))
 
-client.run('NTM1OTc4NDE0NDM2NTE1ODUw.DyQd-A.hBxtU5deAex99aWSydfNKn0z6E4')
+client.run(os.environ["STACY_TOKEN"])
