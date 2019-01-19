@@ -50,8 +50,8 @@ async def on_message(message):
                 else:
                     await client.send_message(message.channel, "No meetings coming up")
             else:
-                await client.send_message(message.channel, content="Hey {}, I'm Steve, CEO here at Bots Unlimited. I authorise the events coming up in the schedule".format(name))
+                await client.send_message(message.channel, content="Hey {}, I'm Stacy, Assistant here at Bots Unlimited. I can tell you about meetings and events that are planned but not published".format(name))
         else:
-            await client.send_message(message.channel, content="Hey {}, I'm Steve, CEO here at Bots Unlimited. I'm only available to executive".format(name))
+            await client.send_message(message.channel, content="Hey {}, I'm Stacy, Assistant here at Bots Unlimited. I'm only available to executive".format(name))
 
-client.run('NTM1OTc4NDE0NDM2NTE1ODUw.DyQAfg.ZqQoOhAIitkes1-ue-Su3uE99WY')
+client.run('NTM1OTc4NDE0NDM2NTE1ODUw.DyQd-A.hBxtU5deAex99aWSydfNKn0z6E4')
