@@ -37,6 +37,21 @@ async def print_calendar(events, event_type, channel):
     else:
         await client.send_message(channel, "No {} planned".format(event_type))
 
+def match_event(query, events):
+    fuzzy_threshold_ratio = 90
+    
+    max_ratio = 0
+    max_event = None
+    for event in events:
+        ratio = fuzz.partial_ratio(event["summary"].lower(), query.lower()) 
+        if ratio > max_ratio:
+            max_ratio = ratio
+            max_event = event
+
+    if max_ratio > fuzzy_threshold_ratio:
+        return max_event
+    return None
+
 plan_calendar = 'rmit.edu.au_ct5j003ncdbmu1o2ga2gasu86k@group.calendar.google.com'
 
 @client.event
@@ -52,21 +67,16 @@ async def on_message(message):
                     await client.send_typing(message.channel)
                     fuzzy_threshold_ratio = 90
                     
-                    max_event = None
-                    for event in events:
-                        ratio = fuzz.partial_ratio(event["summary"].lower(), request.lower()) 
-                        if ratio > max_ratio:
-                            max_ratio = ratio
-                            max_event = event
+                    event = match_event(request, events)
 
-                    if max_ratio > 90:
-                        await client.send_message(message.channel, "So you want to publish {} to Eventbrite?".format(max_event['summary']))
+                    if event:
+                        await client.send_message(message.channel, "So you want to publish {} to Eventbrite?".format(event['summary']))
                         reply = await client.wait_for_message(channel=message.channel, author = message.author)
                         if reply.content.lower() == "yes":
                             await client.send_message(message.channel, "Alrighty, I'll get on to it")
                             await client.send_typing(message.channel)
-                            print(create_event(max_event))
-                            await client.send_message(message.channel, "All done with creating an event for {}. Let me know if you need anything more".format(max_event["summary"]))
+                            print(create_event(event))
+                            await client.send_message(message.channel, "All done with creating an event for {}. Let me know if you need anything more".format(event["summary"]))
                         else:
                             await client.send_message(message.channel, "Ok, I'll hold it off")
                         break
