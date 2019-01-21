@@ -51,7 +51,7 @@ def cleanhtml(raw_html):
 
 @client.event
 async def on_message(message):
-    name = message.author.nick if hasattr(message.author, 'nick') else message.author.name
+    name = message.author.nick if hasattr(message.author, 'nick') and message.author.nick is not None else message.author.name
     if client.user.mentioned_in(message):
         await client.send_typing(message.channel)
         events = get_upcoming();

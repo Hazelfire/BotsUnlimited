@@ -29,7 +29,7 @@ def event_to_string(event):
 
 @client.event
 async def on_message(message):
-    name = message.author.nick if hasattr(message.author, 'nick') else message.author.name
+    name = message.author.nick if hasattr(message.author, 'nick') and message.author.nick is not None else message.author.name
     if client.user.mentioned_in(message):
         if message.author.server_permissions.administrator:
             if words_in(['plan', 'event', 'run', 'schedule'], message.content):

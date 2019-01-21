@@ -56,7 +56,7 @@ plan_calendar = 'rmit.edu.au_ct5j003ncdbmu1o2ga2gasu86k@group.calendar.google.co
 
 @client.event
 async def on_message(message):
-    name = message.author.nick if message.author.nick is not None else message.author.name
+    name = message.author.nick if hasattr(message.author, 'nick') and message.author.nick is not None else message.author.name
     if client.user.mentioned_in(message):
         if message.author.server_permissions.administrator:
             if words_in(['eventbrite'], message.content):
