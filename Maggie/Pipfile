@@ -1,0 +1,19 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+"discord.py" = "*"
+google-api-python-client = "*"
+"google-auth-httplib2" = "*"
+google-auth-oauthlib = "*"
+python-dateutil = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.5"
+
+[scripts]
+start = "python index.py"
