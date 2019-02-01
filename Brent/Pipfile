@@ -17,3 +17,6 @@ selenium = "*"
 
 [requires]
 python_version = "3.5"
+
+[scripts]
+start = "python index.py"
