@@ -2,18 +2,11 @@ import discord
 import os
 import asyncio
 from dateutil.parser import parse
-from googlecalendar import get_upcoming, patch_event
+from .googlecalendar import get_upcoming, patch_event
 from fuzzywuzzy import fuzz
 import re
 
 client = discord.Client()
-
-@client.event
-async def on_ready():
-    print('Logged in as')
-    print(client.user.name)
-    print(client.user.id)
-    print('------')
 
 def words_in(words, message):
     for word in words:
@@ -137,5 +130,3 @@ async def on_message(message):
                     await client.send_message(message.channel, content="Hey {}, I'm Stacy, Assistant here at Bots Unlimited. I can tell you about meetings and events that are planned but not published".format(name))
         else:
             await client.send_message(message.channel, content="Hey {}, I'm Stacy, Assistant here at Bots Unlimited. I'm only available to executive".format(name))
-
-client.run(os.environ["STACY_TOKEN"])

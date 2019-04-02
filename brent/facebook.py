@@ -30,7 +30,7 @@ def create_facebook_event(event):
 
     create_event = driver.find_element_by_css_selector(".fbReactComposerAttachmentSelector_EVENT > span:nth-child(1) > span:nth-child(2)")
     create_event.click()
-    
+    """
     title_field = driver.find_element_by_css_selector('div[data-testid="create_event_title_input"] input')
     location_field = driver.find_element_by_css_selector('div[data-testid="create_event_location_input"] input')
     description_field = driver.find_element_css_selector('div[data-testid="create_event_dialogue"] div[role="presentation"]')
@@ -61,6 +61,6 @@ def create_facebook_event(event):
         if month_later < start_time:
             next_button.click()
         else:
-            break
+            break """
 
 

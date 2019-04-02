@@ -2,19 +2,14 @@ import discord
 import os
 import asyncio
 from dateutil.parser import parse
-from googlecalendar import get_upcoming
+from .googlecalendar import get_upcoming
 from fuzzywuzzy import fuzz
 import re
 import json
+from unione import get_member_count
 
 client = discord.Client()
-
-@client.event
-async def on_ready():
-    print('Logged in as')
-    print(client.user.name)
-    print(client.user.id)
-    print('------')
+db_file = os.path.expanduser("~/.config/bots/db.json")
 
 def words_in(words, message):
     for word in words:
@@ -102,17 +97,17 @@ async def get_feedback(author, event):
 async def on_message(message):
     name = message.author.nick if hasattr(message.author, 'nick') and message.author.nick is not None else message.author.name
     if client.user.mentioned_in(message):
-        with open("db.json", "r+") as f:
+        with open(db_file, "r+") as f:
             users = json.load(f)
             if message.author.id in users:
                 if words_in(["test"],  message.content):
                     await client.send_message(message.channel, "Sure! I'll just test out the feeback giving process with you")
                     await get_feedback(message.author, "Test event")
-                elif words_in(["event"], message.context):
+                elif words_in(["many","count"], message.content):
+                    await client.send_message(message.channel, "I'll quickly check, give me a second")
                     await client.send_typing(message.channel)
-
-                elif words_in(["feedback"], message.content):
-                    pass
+                    count = await get_member_count()
+                    await client.send_message(message.channel, "We currently have {} members!".format(count))
                 else:
                     await client.send_message(message.channel, content="Hey {}, I'm Maggie, Senior director for Program Management. I take feedback on events as well as give data".format(name))
             else:
@@ -125,5 +120,3 @@ async def on_message(message):
                     f.seek(0)
                     json.dump(users, f)
                     await client.send_message(message.author, "Thank you! I've got you in the system now")
-
-client.run(os.environ["MAGGIE_TOKEN"])

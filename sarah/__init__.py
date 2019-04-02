@@ -2,18 +2,11 @@ import discord
 import os
 import asyncio
 from dateutil.parser import parse
-from googlecalendar import get_upcoming
+from .googlecalendar import get_upcoming
 from fuzzywuzzy import fuzz
 import re
 
 client = discord.Client()
-
-@client.event
-async def on_ready():
-    print('Logged in as')
-    print(client.user.name)
-    print(client.user.id)
-    print('------')
 
 def words_in(words, message):
     for word in words:
@@ -48,6 +41,16 @@ def cleanhtml(raw_html):
     cleantext = re.sub(cleanr, '', raw_html.replace("<br>", "\n"))
     return cleantext
 
+async def describe_event(channel, event):
+    await client.send_message(channel,
+            content='Certainly, the {} will be run from {} to {} \n Location: {}\n{}'.format(
+                event["summary"],
+                parse_datetime(event["start"]["dateTime"]),
+                parse_time(event["end"]["dateTime"]),
+                event["location"],
+                cleanhtml(event["description"])
+            ))
+
 
 @client.event
 async def on_message(message):
@@ -57,18 +60,9 @@ async def on_message(message):
         events = get_upcoming();
         event = match_event(message.content, events)
         if event:
-            await client.send_message(message.channel,
-                    content='Certainly, the {} will be run from {} to {} \n Location: {}\n{}'.format(
-                        event["summary"],
-                        parse_datetime(event["start"]["dateTime"]),
-                        parse_time(event["end"]["dateTime"]),
-                        event["location"],
-                        cleanhtml(event["description"])
-                    ))
+            await describe_event(message.channel, event)
         elif words_in(['event', 'run', 'schedule'], message.content):
             upcoming = "\n".join([event["summary"] + ", " + parse_datetime(event["start"]["dateTime"]) for event in events])
             await client.send_message(message.channel, content='Certainly {}, Our Upcoming events are \n {}'.format(name, upcoming))
         else:
             await client.send_message(message.channel, content="Hey {}, I'm Sarah, VP of marketing operations here at Bots Unlimited. I don't check Discord often, so if you want to talk to me, please mention me. You can ask me about what events are coming up".format(name))
-
-client.run(os.environ["SARAH_TOKEN"])
