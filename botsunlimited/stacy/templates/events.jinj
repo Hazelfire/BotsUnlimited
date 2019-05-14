@@ -1,0 +1,8 @@
+{% if events|length == 0 %}
+We have no events coming up! What are you people! Get planning!!! If you say "create" when mentioning me we can register a new event
+{% else %}
+Hey {{ message.author.mention }}! We do have events coming up! We have:
+{% for event in events %}
+ - {{ event.name }}
+{% endfor %}
+{% endif %}

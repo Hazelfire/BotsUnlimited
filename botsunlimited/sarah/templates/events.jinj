@@ -1,0 +1,9 @@
+{% if events|length == 0 %}
+Hmmm... Don't seem to have any events registered. I'll get back to you when
+we actually do have events.
+{% else %}
+Hey {{ message.author.name }}! We have {{events|length}} events coming up! We have:
+{% for event in events %}
+ - {{ event.name }}
+{% endfor %}
+{% endif %}

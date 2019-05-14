@@ -1,0 +1,16 @@
+{% if stage == "list-events" %}
+Here are our events:
+{% for event in events %}
+ - {{ event.name }}
+{% endfor %}
+Which one do you want to delete (type the name)
+{% elif stage == "confirm" %}
+Are you sure you want to delete {{event.name}}? I can't take responsibility for
+the consequences! (Yes/No)
+{% elif stage == "done" %}
+All done!
+{% elif stage == "missing" %}
+I couldn't find that task, did you type that correctly?
+{% elif stage == "cancel" %}
+Changed your mind? All good!
+{% endif %}

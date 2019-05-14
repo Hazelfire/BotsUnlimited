@@ -22,7 +22,7 @@ async def run_routes(routes, message, client, context):
 
     """
 
-    view = group(always(), routes)(client, message)
+    view = routes(client, message, context)
     if view:
         await view(client, message, context)
 
@@ -54,10 +54,10 @@ def create_client(module):
     templates = Environment(
         loader=PackageLoader(module, "templates"), autoescape=select_autoescape([])
     )
-    engine = create_engine("sqlite:///:memory:", echo=True)
+    engine = create_engine("sqlite:///db.sqlite3", echo=True)
     Session = sessionmaker(bind=engine)
 
-    models = __import__(module).models
+    models = __import__(module + ".models").models
 
     models.Base.metadata.create_all(engine)
 
@@ -69,6 +69,8 @@ def create_client(module):
 
             """
             session = Session()
+            templates.globals["message"] = message
+
             await run_routes(routes, message, client, Context(templates, session))
             session.commit()
 

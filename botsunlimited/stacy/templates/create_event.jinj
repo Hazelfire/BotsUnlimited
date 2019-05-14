@@ -1,0 +1,7 @@
+{% if stage == "name" %}
+Awesome! Lets get started with this event! What's the name of the new event
+{% elif stage == "description" %}
+The {{name}}! Sounds Awesome! Can you give a description?
+{% else %}
+Awesome! Can't wait for {{name}}!
+{%endif%}
