@@ -1,18 +1,18 @@
 def route(req, view):
     """ Defines a route to a controller """
 
-    async def run(client, message, context):
+    def run(client, message):
         if req(message, client):
-            return await view(client, message, context)
+            return view
 
     return run
 
 
 def group(req, routes):
-    async def run(client, message, context):
+    def run(client, message):
         if req(message, client):
             for route in routes:
-                result = await route(client, message, context)
+                result = route(client, message)
                 if result:
                     return result
 

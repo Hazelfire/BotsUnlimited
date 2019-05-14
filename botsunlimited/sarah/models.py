@@ -9,10 +9,10 @@ Description: Models that Sarah can access
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 
-BASE = declarative_base()
+Base = declarative_base()
 
 # pylint: disable=R0903
-class Event(BASE):
+class Event(Base):
     """ Represents a club event """
 
     __tablename__ = "events"

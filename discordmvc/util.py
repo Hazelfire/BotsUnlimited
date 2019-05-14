@@ -8,7 +8,11 @@ Description: Util file for constructing discord.py clients from projects
 
 import os
 import discord
+from sqlalchemy import create_engine
 from jinja2 import Environment, PackageLoader, select_autoescape
+from sqlalchemy.orm import sessionmaker
+from .reqs import always
+from .routes import group
 
 
 async def run_routes(routes, message, client, context):
@@ -17,8 +21,10 @@ async def run_routes(routes, message, client, context):
     :message: Discord.py message
 
     """
-    for route in routes:
-        await route(client, message, context)
+
+    view = group(always(), routes)(client, message)
+    if view:
+        await view(client, message, context)
 
 
 def wrap_bot(on_message):
@@ -34,8 +40,9 @@ def wrap_bot(on_message):
 
 
 class Context:
-    def __init__(self, templates):
+    def __init__(self, templates, db):
         self.templates = templates
+        self.db = db
 
 
 def create_client(module):
@@ -47,6 +54,12 @@ def create_client(module):
     templates = Environment(
         loader=PackageLoader(module, "templates"), autoescape=select_autoescape([])
     )
+    engine = create_engine("sqlite:///:memory:", echo=True)
+    Session = sessionmaker(bind=engine)
+
+    models = __import__(module).models
+
+    models.Base.metadata.create_all(engine)
 
     def wrapper(client):
         async def on_message(message):
@@ -55,7 +68,9 @@ def create_client(module):
             :message: Discord.py message
 
             """
-            await run_routes(routes, message, client, Context(templates))
+            session = Session()
+            await run_routes(routes, message, client, Context(templates, session))
+            session.commit()
 
         return on_message
 
