@@ -1,83 +1,40 @@
 from sarah.models import Event
+from discordmvc.actions import reply, listen, query
 
 
-async def list_plan(client, message, context):
+def list_plan(client, message, context):
     events = list(context.db.query(Event).all())
-    await message.channel.send(
-        context.templates.get_template("events.jinj").render({"events": events})
-    )
+    yield reply(events=events)
 
 
-def reply_to(message):
-    def check(m):
-        return message.author == m.author and message.channel == m.channel
-
-    return check
-
-
-async def create_event(client, message, context):
-    await message.channel.send(
-        context.templates.get_template("create_event.jinj").render({"stage": "name"})
-    )
-
-    name_response = await client.wait_for("message", check=reply_to(message))
+def create_event(client, message, context):
+    name_response = yield query(stage="name")
     name = name_response.content
-    await message.channel.send(
-        context.templates.get_template("create_event.jinj").render(
-            {"name": name, "stage": "description"}
-        )
-    )
 
-    description_response = await client.wait_for("message", check=reply_to(message))
+    description_response = yield query(name=name, stage="description")
     description = description_response.content
 
     context.db.add(Event(name=name, description=description))
-    await message.channel.send(
-        context.templates.get_template("create_event.jinj").render(
-            {"name": name, "stage": "end"}
-        )
-    )
+
+    yield reply(name=name, stage="end")
 
 
-async def delete_event(client, message, context):
+def delete_event(client, message, context):
     events = list(context.db.query(Event).all())
-    await message.channel.send(
-        context.templates.get_template("delete_event.jinj").render(
-            {"stage": "list-events", "events": events}
-        )
-    )
 
-    name_response = await client.wait_for("message", check=reply_to(message))
+    name_response = yield query(stage="list-events", events=events)
     name = name_response.content
 
     event = context.db.query(Event).filter(Event.name == name).first()
     if event:
-        await message.channel.send(
-            context.templates.get_template("delete_event.jinj").render(
-                {"stage": "confirm", "event": event}
-            )
-        )
-
-        confirm_response = await client.wait_for("message", check=reply_to(message))
+        confirm_response = yield query(stage="confirm", event=event)
         confirm = confirm_response.content
         if confirm.upper() == "YES":
             context.db.query(Event).filter(Event.name == name).delete()
 
-            await message.channel.send(
-                context.templates.get_template("delete_event.jinj").render(
-                    {"stage": "done"}
-                )
-            )
+            yield reply(stage="done")
         else:
-            await message.channel.send(
-                context.templates.get_template("delete_event.jinj").render(
-                    {"stage": "cancel"}
-                )
-            )
+            yield reply(stage="cancel")
 
     else:
-        await message.channel.send(
-            context.templates.get_template("delete_event.jinj").render(
-                {"stage": "missing"}
-            )
-        )
+        yield reply(stage="missing")

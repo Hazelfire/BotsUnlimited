@@ -24,7 +24,14 @@ async def run_routes(routes, message, client, context):
 
     view = routes(client, message, context)
     if view:
-        await view(client, message, context)
+        generator = view(client, message, context)
+        action = generator.send(None)
+        try:
+            while True:
+                reply = await action(client, message, context, view.__name__)
+                action = generator.send(reply)
+        except StopIteration:
+            pass
 
 
 def wrap_bot(on_message):

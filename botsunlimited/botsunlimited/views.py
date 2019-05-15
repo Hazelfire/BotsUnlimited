@@ -1,2 +1,5 @@
-async def introduce(client, message, context):
-    await message.channel.send(context.templates.get_template("intro.jinj").render())
+from discordmvc.actions import reply
+
+
+def introduce(client, message, context):
+    yield reply()
