@@ -1,0 +1,5 @@
+{% macro list_events(events) %}
+{% for event in events %}
+ - {{ event.name }}
+{% endfor %}
+{% endmacro %}
